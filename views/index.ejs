@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/style.css" />
+    <!-- <script src="main.js"></script> -->
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+</head>
+
+<body>
+      <div class="container">
+        <!-- Modal -->
+        <div class="modal fade" id="myModal" role="dialog">
+          <div class="modal-dialog">
+          
+            <!-- Modal content-->
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+              </div>
+              <div class="modal-body">
+                <p>Please Enter your Name:</p>
+              </div>
+              <input type="text" id="name" placeholder="Name"/>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Confirm</button>
+              </div>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+    <div id="title">{{title}}</div>
+    <br/><br/>
+    <input type="text" id="message" placeholder="Enter Message & Press Enter"/>
+    <div id="messages"></div>
+</body>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  $(window).load(function()
+    {
+        $('#myModal').modal('show');
+    });
+  var socket = io();
+  document.getElementById('message').addEventListener('keydown', (event) => {
+    if (event.which === 13 && event.shiftKey == false) {
+      socket.emit("input", {
+        message: document.getElementById('message').value,
+        name: document.getElementById('name').value
+        })
+     document.getElementById('message').value = '';
+}
+    // event.preventDefault();
+  })
+  socket.on('inputs', (data) => {
+        let messageBroadcast = document.createElement('div');
+        messageBroadcast.setAttribute('class', 'chat-messages');
+        messageBroadcast.textContent = data.name +' : '+ data.message;
+        document.getElementById('messages').appendChild(messageBroadcast);
+        document.getElementById('messages').insertBefore(messageBroadcast, document.getElementById('messages').firstChild);
+        console.log(data);
+        });
+</script>
+</html>
